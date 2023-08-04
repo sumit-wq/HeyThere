@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   applyButtonText: {
-    color: 'white',
+    color: colors.white,
     fontSize: 16,
   },
   filterBtns: {

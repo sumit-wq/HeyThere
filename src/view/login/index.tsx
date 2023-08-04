@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   errorText: {
-    color: 'red',
+    color: colors.error,
   },
   textInput: {
     borderWidth: 0.2,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
   },
   errorInput: {
-    borderColor: 'red',
+    color: colors.error,
   },
   txtSmall: {
     fontSize: 12,

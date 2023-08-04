@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
   markerText: {
-    color: 'white',
+    color: colors.white,
     fontSize: 11,
     fontWeight: 'bold',
   },
