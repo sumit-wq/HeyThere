@@ -34,10 +34,6 @@ const Map = () => {
   const navigation = useNavigation();
   const [currentLocation, setCurrentLocation] = useState<number[]>([]);
   const [markers, setMarkers] = useState<MarkerConfig[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState<number | undefined>();
-  const [anchor, setAnchor] = useState({x: 0.5, y: 0.5});
-  const [allowOverlap, setAllowOverlap] = useState(true);
-  // const [show, setShow] = useState(true);
   const [xuserId] = useAsyncStorage(ASYNC_ENUM.X_USER_ID);
   const [chattingUsers, setChattingUsers] = useState<UserData[]>([]);
   const [distanceFilterVisible, setDistanceFilterVisible] = useState(false);
@@ -46,10 +42,7 @@ const Map = () => {
   /****FIlter logic */
 
   const handleApplyDistanceFilter = (distance: number) => {
-    // Update the selected distance
     setSelectedDistance(distance);
-    // Apply the distance filter logic here based on the selected distance value
-    // For example, filter the markers within the specified distance from the user's current location
   };
 
   const handleOpenDistanceFilter = () => {
@@ -104,7 +97,7 @@ const Map = () => {
 
   useEffect(() => {
     handleChattingUsers();
-  }, [handleChattingUsers, chattingUsers]);
+  }, [handleChattingUsers, chattingUsers, selectedDistance]);
 
   const handleChatClick = (marker, index) => {
     navigation.navigate(SCREENS.CHATTING, {data: marker.xuserId, id: xuserId});
@@ -129,8 +122,6 @@ const Map = () => {
             <MarkerView
               key={`MarkerView-${marker.coords.join('-')}_${i}`}
               coordinate={marker.coords}
-              anchor={anchor}
-              allowOverlap={allowOverlap}
               style={{display: 'flex'}}>
               <TouchableOpacity
                 style={[

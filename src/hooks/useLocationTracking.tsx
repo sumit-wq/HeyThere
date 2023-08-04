@@ -4,29 +4,29 @@ import Geolocation, {
   GeolocationError,
   GeolocationResponse,
 } from '@react-native-community/geolocation';
-import {PERMISSIONS, check, request, RESULTS} from 'react-native-permissions';
 import {Alert, Linking, Platform} from 'react-native';
 
-const useCurrentLocation = (): [
-  GeolocationResponse | null,
-  Error | null,
+type LocationData = GeolocationResponse | null;
+type ErrorType = GeolocationError | null;
+
+const useLocationTracking = (): [
+  LocationData,
+  ErrorType,
   boolean,
   () => void,
 ] => {
-  const [locationData, setLocationData] = useState<GeolocationResponse | null>(
-    null,
-  );
-  const [error, setError] = useState<Error | null>(null);
+  const [locationData, setLocationData] = useState<LocationData>(null);
+  const [error, setError] = useState<ErrorType>(null);
   const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
 
   const checkLocationPermission = async () => {
     try {
       const status = await checkLocationPermissionStatus();
-      if (status === RESULTS.GRANTED) {
+      if (status === 'granted') {
         setPermissionGranted(true);
-      } else if (status === RESULTS.DENIED) {
+      } else if (status === 'denied') {
         requestLocationPermission();
-      } else if (status === RESULTS.BLOCKED) {
+      } else if (status === 'blocked') {
         setError(new Error('Location permission blocked'));
       }
     } catch (error) {
@@ -35,27 +35,17 @@ const useCurrentLocation = (): [
   };
 
   const checkLocationPermissionStatus = async () => {
-    return await check(
-      Platform.select({
-        android: PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-        ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-      }),
-    );
+    return await Geolocation.requestAuthorization();
   };
 
   const requestLocationPermission = async () => {
     try {
-      const status = await request(
-        Platform.select({
-          android: PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-          ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-        }),
-      );
-      if (status === RESULTS.GRANTED) {
+      const status = await Geolocation.requestAuthorization();
+      if (status === 'granted') {
         setPermissionGranted(true);
-      } else if (status === RESULTS.DENIED) {
+      } else if (status === 'denied') {
         setError(new Error('Location permission denied'));
-      } else if (status === RESULTS.BLOCKED) {
+      } else if (status === 'blocked') {
         // Location permission is blocked, show an alert and guide the user to settings
         setError(new Error('Location permission blocked'));
         showSettingsAlert();
@@ -85,22 +75,24 @@ const useCurrentLocation = (): [
     );
   };
 
+  const getLocation = useCallback(() => {
+    Geolocation.getCurrentPosition(
+      position => {
+        setLocationData(position.coords);
+        setError(null);
+      },
+      error => {
+        setError(error);
+      },
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+    );
+  }, []);
+
   useEffect(() => {
     checkLocationPermission();
   }, []);
 
-  const performApiCall = useCallback(() => {
-    // ... Your API call implementation ...
-    if (locationData) {
-      // Perform the API call with the location data
-    }
-  }, [locationData]);
-
-  // Memoize the API call function using useCallback
-  const memoizedPerformApiCall = useCallback(performApiCall, [locationData]);
-
-  // Return the memoized function and other values
-  return [locationData, error, permissionGranted, memoizedPerformApiCall];
+  return [locationData, error, permissionGranted, getLocation];
 };
 
-export {useCurrentLocation};
+export {useLocationTracking};
