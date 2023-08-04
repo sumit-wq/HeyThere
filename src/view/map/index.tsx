@@ -85,7 +85,7 @@ const Map = () => {
 
   useEffect(() => {
     Mapbox.setAccessToken(
-      'sk.eyJ1Ijoic3VtaXQ5MjUiLCJhIjoiY2xrcTF4bzdjMnc4ODNmcnptbTltMHZ6eCJ9.omvrjrLXaiXeRrzDsoPjYg',
+      '', //Enter secret key
     );
   }, []);
 
